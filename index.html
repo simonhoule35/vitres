@@ -267,7 +267,7 @@ function nudgeStock(d){const el=document.getElementById('d-stock');el.textConten
 // ── CAMERA ──
 async function openCamera(){
   try{
-    cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode,width:{ideal:1920},height:{ideal:1080}},audio:false});
+    cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode,width:{ideal:4000},height:{ideal:3000}},audio:false});
     document.getElementById('camera-video').srcObject=cameraStream;
     document.getElementById('camera-overlay').classList.add('open');
   }catch(err){
@@ -284,7 +284,7 @@ async function flipCamera(){
   facingMode=facingMode==='environment'?'user':'environment';
   if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop())}
   try{
-    cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode,width:{ideal:1920},height:{ideal:1080}},audio:false});
+    cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode,width:{ideal:4000},height:{ideal:3000}},audio:false});
     document.getElementById('camera-video').srcObject=cameraStream;
   }catch(err){toast('❌ Could not flip camera')}
 }
