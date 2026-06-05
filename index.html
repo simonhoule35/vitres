@@ -237,7 +237,7 @@
   </div>
 </div>
 
-<input type="file" id="fileInput" accept="image/*" capture="environment" />
+<input type="file" id="fileInput" accept="image/*" />
 <div class="toast" id="toast"></div>
 
 <script>
@@ -431,14 +431,21 @@ function saveSheet() {
     const sheet = db.sheets[currentColor].find(s=>s.id===currentSheet);
     if (sheet) {
       Object.assign(sheet, {name,w,h,qty,notes});
-      if (pendingUrl) sheet.photo = pendingUrl;
+      if (pendingUrl) { sheet.photo = pendingUrl; pendingUrl = null; }
     }
+    saveMeta();
+    toast('✓ Saved');
+    document.getElementById('detail-header-title').textContent = name || 'Sheet';
   } else {
-    db.sheets[currentColor].push({ id:'sh_'+Date.now(), name, w, h, qty, notes, photo: pendingUrl||null });
+    const id = 'sh_'+Date.now();
+    db.sheets[currentColor].push({ id, name, w, h, qty, notes, photo: pendingUrl||null });
+    pendingUrl = null;
+    currentSheet = id;
+    saveMeta();
+    toast('✓ Saved');
+    document.getElementById('detail-header-title').textContent = name || 'Sheet';
+    document.getElementById('btn-delete').style.display = 'block';
   }
-  saveMeta();
-  toast('✓ Saved');
-  showColor(currentColor);
 }
 
 function deleteSheet() {
