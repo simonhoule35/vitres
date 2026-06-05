@@ -13,12 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <title>Glass Inventory</title>
   <style>
-    :root {
-      --bg:#111111;--surface:#1a1a1a;--surface2:#222222;--border:#2e2e2e;
-      --text:#ede8e0;--muted:#666;--gold:#c9a84c;--gold-dim:#7a5e20;
-      --danger:#c0392b;--warn:#e67e22;--ok:#27ae60;--radius:14px;
-      --safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px);
-    }
+    :root{--bg:#111111;--surface:#1a1a1a;--surface2:#222222;--border:#2e2e2e;--text:#ede8e0;--muted:#666;--gold:#c9a84c;--gold-dim:#7a5e20;--danger:#c0392b;--warn:#e67e22;--ok:#27ae60;--radius:14px;--safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px)}
     *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
     body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;min-height:100dvh;overscroll-behavior:none}
     .header{position:sticky;top:0;z-index:100;background:var(--bg);padding:calc(var(--safe-top) + 14px) 18px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
@@ -27,8 +22,7 @@
     .header-sub{font-size:11px;color:var(--muted);font-weight:300;margin-top:1px}
     .header-add{width:36px;height:36px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;font-size:20px;color:#111;display:flex;align-items:center;justify-content:center;transition:transform .15s,opacity .15s;flex-shrink:0}
     .header-add:active{transform:scale(.9);opacity:.8}
-    .screen{display:none;animation:fadeUp .2s ease}
-    .screen.active{display:block}
+    .screen{display:none;animation:fadeUp .2s ease}.screen.active{display:block}
     @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
     .color-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px}
     .color-chip{border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);cursor:pointer;background:var(--surface);transition:transform .15s}
@@ -36,12 +30,10 @@
     .chip-swatch{height:68px;position:relative}
     .chip-swatch-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,#00000055)}
     .chip-label{padding:7px 9px;display:flex;justify-content:space-between;align-items:center}
-    .chip-name{font-size:11px;font-weight:500}
-    .chip-count{font-size:10px;color:var(--muted)}
+    .chip-name{font-size:11px;font-weight:500}.chip-count{font-size:10px;color:var(--muted)}
     .add-color-tile{border-radius:var(--radius);border:1.5px dashed var(--border);cursor:pointer;height:106px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:border-color .2s,background .2s}
     .add-color-tile:active{background:var(--surface);border-color:var(--gold-dim)}
-    .add-color-tile span:first-child{font-size:22px;color:var(--muted)}
-    .add-color-tile span:last-child{font-size:10px;color:var(--muted)}
+    .add-color-tile span:first-child{font-size:22px;color:var(--muted)}.add-color-tile span:last-child{font-size:10px;color:var(--muted)}
     .sheet-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px}
     .sheet-card{background:var(--surface);border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:transform .15s}
     .sheet-card:active{transform:scale(.97)}
@@ -56,8 +48,7 @@
     .sheet-stock-out{font-size:10px;color:var(--danger);margin-top:4px;font-weight:500}
     .add-sheet-tile{background:var(--surface);border-radius:var(--radius);border:1.5px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;aspect-ratio:1;transition:border-color .2s,background .2s}
     .add-sheet-tile:active{background:var(--surface2);border-color:var(--gold-dim)}
-    .add-sheet-tile span:first-child{font-size:24px;color:var(--muted)}
-    .add-sheet-tile span:last-child{font-size:10px;color:var(--muted);text-align:center;padding:0 8px}
+    .add-sheet-tile span:first-child{font-size:24px;color:var(--muted)}.add-sheet-tile span:last-child{font-size:10px;color:var(--muted);text-align:center;padding:0 8px}
     .detail-photo{width:100%;aspect-ratio:4/3;background:var(--surface2);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
     .detail-photo img{width:100%;height:100%;object-fit:cover}
     .detail-photo-empty{font-size:64px;opacity:.15}
@@ -70,8 +61,7 @@
     .detail-field input,.detail-field textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .15s}
     .detail-field input:focus,.detail-field textarea:focus{border-color:var(--gold-dim)}
     .detail-field textarea{resize:none;height:72px}
-    .row{display:flex;gap:10px}
-    .row input{flex:1}
+    .row{display:flex;gap:10px}.row input{flex:1}
     .stock-row{display:flex;align-items:center;gap:16px}
     .stock-btn{width:36px;height:36px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
     .stock-btn:active{background:var(--border)}
@@ -97,41 +87,49 @@
     .modal-actions{display:flex;gap:10px;margin-top:20px}
     .modal-btn-cancel{flex:1;padding:12px;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer}
     .modal-btn-ok{flex:2;padding:12px;background:var(--gold);color:#111;border:none;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer}
+
+    /* ── CAMERA OVERLAY ── */
+    .camera-overlay{display:none;position:fixed;inset:0;background:#000;z-index:500;flex-direction:column}
+    .camera-overlay.open{display:flex}
+    .camera-video{width:100%;flex:1;object-fit:cover}
+    .camera-bar{background:#111;padding:20px 24px calc(var(--safe-bot) + 20px);display:flex;align-items:center;justify-content:space-between}
+    .camera-cancel{background:none;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;padding:8px}
+    .camera-shutter{width:64px;height:64px;border-radius:50%;background:#fff;border:4px solid #888;cursor:pointer;transition:transform .1s}
+    .camera-shutter:active{transform:scale(.92)}
+    .camera-flip{background:none;border:none;color:var(--muted);font-size:24px;cursor:pointer;padding:8px}
+    .camera-uploading{position:absolute;inset:0;background:#000000cc;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#fff;font-size:14px}
+
     .loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:12px}
     .loading-spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
     .toast{position:fixed;bottom:calc(var(--safe-bot) + 20px);left:50%;transform:translateX(-50%) translateY(20px);background:#2a2a2a;border:1px solid var(--border);color:var(--text);padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:999;white-space:nowrap}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-    #fileInput{display:none}
   </style>
 </head>
 <body>
 
 <div class="loading" id="loading"><div class="loading-spinner"></div><span>Loading…</span></div>
 
+<!-- HOME -->
 <div id="screen-home" class="screen">
   <div class="header">
-    <div style="flex:1">
-      <div class="header-title">🪟 Glass Inventory</div>
-      <div class="header-sub" id="home-sub"></div>
-    </div>
+    <div style="flex:1"><div class="header-title">🪟 Glass Inventory</div><div class="header-sub" id="home-sub"></div></div>
     <button class="header-add" onclick="openAddColorModal()">＋</button>
   </div>
   <div class="color-grid" id="color-grid"></div>
 </div>
 
+<!-- COLOR -->
 <div id="screen-color" class="screen">
   <div class="header">
     <button class="header-back" id="back-color" onclick="showHome()">‹</button>
-    <div style="flex:1">
-      <div class="header-title" id="color-title">Color</div>
-      <div class="header-sub" id="color-sub"></div>
-    </div>
+    <div style="flex:1"><div class="header-title" id="color-title">Color</div><div class="header-sub" id="color-sub"></div></div>
     <button class="header-add" onclick="goNewSheet()">＋</button>
   </div>
   <div class="sheet-grid" id="sheet-grid"></div>
 </div>
 
+<!-- DETAIL -->
 <div id="screen-detail" class="screen">
   <div class="header">
     <button class="header-back" style="display:flex" onclick="showColor(currentColor)">‹</button>
@@ -141,9 +139,9 @@
     <div class="detail-photo-empty" id="detail-empty-icon">🪟</div>
     <img id="detail-img" src="" alt="" style="display:none" />
     <div class="detail-uploading" id="detail-uploading" style="display:none">
-      <div class="upload-spinner"></div><span>Uploading…</span>
+      <div class="upload-spinner"></div><span>Uploading to ImgBB…</span>
     </div>
-    <button class="detail-photo-btn" id="photo-btn" onclick="pickPhoto()">📷 Change photo</button>
+    <button class="detail-photo-btn" onclick="openCamera()">📷 Change photo</button>
   </div>
   <div class="detail-body">
     <div class="detail-field"><label>Sheet name / code</label><input id="d-name" type="text" placeholder="e.g. Forest Green G-01" /></div>
@@ -151,12 +149,13 @@
     <div class="detail-field"><label>Quantity in stock</label><div class="stock-row"><button class="stock-btn" onclick="nudgeStock(-1)">−</button><div class="stock-val" id="d-stock">1</div><button class="stock-btn" onclick="nudgeStock(1)">＋</button></div></div>
     <div class="detail-field"><label>Notes</label><textarea id="d-notes" placeholder="Texture, supplier, project ideas…"></textarea></div>
     <div class="btn-row">
-      <button class="btn-save" id="btn-save" onclick="saveSheet()">Save</button>
+      <button class="btn-save" onclick="saveSheet()">Save</button>
       <button class="btn-delete" id="btn-delete" onclick="deleteSheet()">Delete</button>
     </div>
   </div>
 </div>
 
+<!-- ADD COLOR MODAL -->
 <div class="modal-overlay" id="modal-color">
   <div class="modal">
     <div class="modal-title">New color category</div>
@@ -170,94 +169,85 @@
   </div>
 </div>
 
-<input type="file" id="fileInput" accept="image/*" />
+<!-- CAMERA OVERLAY -->
+<div class="camera-overlay" id="camera-overlay">
+  <video id="camera-video" class="camera-video" autoplay playsinline muted></video>
+  <canvas id="camera-canvas" style="display:none"></canvas>
+  <div class="camera-uploading" id="camera-uploading" style="display:none">
+    <div class="upload-spinner"></div><span>Uploading photo…</span>
+  </div>
+  <div class="camera-bar">
+    <button class="camera-cancel" onclick="closeCamera()">Cancel</button>
+    <button class="camera-shutter" onclick="takePhoto()"></button>
+    <button class="camera-flip" onclick="flipCamera()">🔄</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 const IMGBB_KEY = 'e0654afe8c56226b8277812d3a432fb2';
 const KEY = 'glassinv_v2';
 
-async function uploadToImgBB(file) {
+async function uploadToImgBB(blob) {
   const form = new FormData();
-  form.append('image', file);
-  const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method:'POST', body:form });
-  if (!res.ok) throw new Error('HTTP ' + res.status);
+  form.append('image', blob, 'glass.jpg');
+  const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {method:'POST',body:form});
+  if (!res.ok) throw new Error('HTTP '+res.status);
   const json = await res.json();
-  if (!json.success) throw new Error(json.error?.message || 'ImgBB error');
+  if (!json.success) throw new Error(json.error?.message||'ImgBB error');
   return json.data.url;
 }
 
-function loadMeta() {
-  try { return JSON.parse(localStorage.getItem(KEY)) || defaultMeta(); } catch { return defaultMeta(); }
-}
-function saveMeta() { localStorage.setItem(KEY, JSON.stringify(db)); }
+function loadMeta(){try{return JSON.parse(localStorage.getItem(KEY))||defaultMeta()}catch{return defaultMeta()}}
+function saveMeta(){localStorage.setItem(KEY,JSON.stringify(db))}
+function defaultMeta(){return{colors:[
+  {id:'red',name:'Red',hex:'#c0392b'},{id:'orange',name:'Orange',hex:'#e67e22'},
+  {id:'yellow',name:'Yellow',hex:'#f1c40f'},{id:'green',name:'Green',hex:'#27ae60'},
+  {id:'blue',name:'Blue',hex:'#2980b9'},{id:'purple',name:'Purple',hex:'#8e44ad'},
+  {id:'pink',name:'Pink',hex:'#e91e8c'},{id:'brown',name:'Brown',hex:'#795548'},
+  {id:'black',name:'Black',hex:'#1a1a1a'},{id:'white',name:'White',hex:'#ecf0f1'},
+  {id:'clear',name:'Clear/Transparent',hex:'#b0c4de'},{id:'multi',name:'Multi/Mixed',hex:'#9b59b6'},
+],sheets:{}}}
 
-function defaultMeta() {
-  return { colors:[
-    {id:'red',name:'Red',hex:'#c0392b'},{id:'orange',name:'Orange',hex:'#e67e22'},
-    {id:'yellow',name:'Yellow',hex:'#f1c40f'},{id:'green',name:'Green',hex:'#27ae60'},
-    {id:'blue',name:'Blue',hex:'#2980b9'},{id:'purple',name:'Purple',hex:'#8e44ad'},
-    {id:'pink',name:'Pink',hex:'#e91e8c'},{id:'brown',name:'Brown',hex:'#795548'},
-    {id:'black',name:'Black',hex:'#1a1a1a'},{id:'white',name:'White',hex:'#ecf0f1'},
-    {id:'clear',name:'Clear/Transparent',hex:'#b0c4de'},{id:'multi',name:'Multi/Mixed',hex:'#9b59b6'},
-  ], sheets:{} };
-}
-
-let db = loadMeta();
-let currentColor = null;
-let currentSheet = null;
-let pendingUrl   = null;
-let uploading    = false;
-let selectedHex  = '#c0392b';
+let db=loadMeta(), currentColor=null, currentSheet=null, pendingUrl=null, uploading=false, selectedHex='#c0392b';
+let cameraStream=null, facingMode='environment';
 
 // ── SCREENS ──
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
-}
-function showHome()         { renderHome(); showScreen('screen-home'); }
-function showColor(cid)     { currentColor=cid; renderColor(cid); showScreen('screen-color'); document.getElementById('back-color').style.display='flex'; }
-function showDetail(cid,id) { currentColor=cid; currentSheet=id; renderDetail(); showScreen('screen-detail'); }
-function goNewSheet()       { showDetail(currentColor,null); }
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
+function showHome(){renderHome();showScreen('screen-home')}
+function showColor(cid){currentColor=cid;renderColor(cid);showScreen('screen-color');document.getElementById('back-color').style.display='flex'}
+function showDetail(cid,id){currentColor=cid;currentSheet=id;renderDetail();showScreen('screen-detail')}
+function goNewSheet(){showDetail(currentColor,null)}
 
-// ── RENDER HOME ──
-function renderHome() {
-  const total = Object.values(db.sheets).reduce((s,a)=>s+a.length,0);
-  document.getElementById('home-sub').textContent = `${db.colors.length} colors · ${total} sheet${total!==1?'s':''} total`;
-  const grid = document.getElementById('color-grid');
-  grid.innerHTML = '';
-  db.colors.forEach(c => {
-    const sheets = db.sheets[c.id]||[];
-    const chip = document.createElement('div');
-    chip.className='color-chip'; chip.onclick=()=>showColor(c.id);
+// ── RENDER ──
+function renderHome(){
+  const total=Object.values(db.sheets).reduce((s,a)=>s+a.length,0);
+  document.getElementById('home-sub').textContent=`${db.colors.length} colors · ${total} sheet${total!==1?'s':''} total`;
+  const grid=document.getElementById('color-grid');grid.innerHTML='';
+  db.colors.forEach(c=>{
+    const sheets=db.sheets[c.id]||[],chip=document.createElement('div');
+    chip.className='color-chip';chip.onclick=()=>showColor(c.id);
     chip.innerHTML=`<div class="chip-swatch" style="${c.id==='clear'?'background:repeating-conic-gradient(#aaa 0% 25%,#ddd 0% 50%) 0 0/14px 14px':'background:'+c.hex}"><div class="chip-swatch-overlay"></div></div><div class="chip-label"><span class="chip-name" style="color:${c.id==='black'||c.id==='white'?'var(--text)':c.hex}">${c.name}</span><span class="chip-count">${sheets.length}</span></div>`;
     grid.appendChild(chip);
   });
-  const tile=document.createElement('div'); tile.className='add-color-tile'; tile.onclick=openAddColorModal;
-  tile.innerHTML='<span>＋</span><span>Add color</span>'; grid.appendChild(tile);
+  const t=document.createElement('div');t.className='add-color-tile';t.onclick=openAddColorModal;t.innerHTML='<span>＋</span><span>Add color</span>';grid.appendChild(t);
 }
-
-// ── RENDER COLOR ──
-function renderColor(cid) {
-  const color=db.colors.find(c=>c.id===cid), sheets=db.sheets[cid]||[];
-  const t=document.getElementById('color-title'); t.textContent=color.name;
-  t.style.color=(cid==='black'||cid==='white')?'var(--text)':color.hex;
+function renderColor(cid){
+  const color=db.colors.find(c=>c.id===cid),sheets=db.sheets[cid]||[];
+  const te=document.getElementById('color-title');te.textContent=color.name;te.style.color=(cid==='black'||cid==='white')?'var(--text)':color.hex;
   document.getElementById('color-sub').textContent=`${sheets.length} sheet${sheets.length!==1?'s':''}`;
-  const grid=document.getElementById('sheet-grid'); grid.innerHTML='';
+  const grid=document.getElementById('sheet-grid');grid.innerHTML='';
   sheets.forEach(sheet=>{
-    const card=document.createElement('div'); card.className='sheet-card'; card.onclick=()=>showDetail(cid,sheet.id);
+    const card=document.createElement('div');card.className='sheet-card';card.onclick=()=>showDetail(cid,sheet.id);
     const sc=sheet.qty===0?'sheet-stock-out':sheet.qty===1?'sheet-stock-warn':'sheet-stock-ok';
     const st=sheet.qty===0?'✗ Out of stock':sheet.qty===1?'⚠ 1 left':`✓ ${sheet.qty} in stock`;
-    card.innerHTML=`<div class="sheet-photo">${sheet.photo?`<img src="${sheet.photo}" alt="" loading="lazy" />`:'<div class="sheet-photo-empty">🪟</div>'}</div><div class="sheet-info"><div class="sheet-name">${sheet.name||'Unnamed'}</div><div class="sheet-size">${sheet.w&&sheet.h?sheet.w+'×'+sheet.h+' cm':'—'}</div><div class="${sc}">${st}</div></div>`;
+    card.innerHTML=`<div class="sheet-photo">${sheet.photo?`<img src="${sheet.photo}" alt="" loading="lazy"/>`:'<div class="sheet-photo-empty">🪟</div>'}</div><div class="sheet-info"><div class="sheet-name">${sheet.name||'Unnamed'}</div><div class="sheet-size">${sheet.w&&sheet.h?sheet.w+'×'+sheet.h+' cm':'—'}</div><div class="${sc}">${st}</div></div>`;
     grid.appendChild(card);
   });
-  const tile=document.createElement('div'); tile.className='add-sheet-tile'; tile.onclick=goNewSheet;
-  tile.innerHTML='<span>＋</span><span>Add a sheet</span>'; grid.appendChild(tile);
+  const t=document.createElement('div');t.className='add-sheet-tile';t.onclick=goNewSheet;t.innerHTML='<span>＋</span><span>Add a sheet</span>';grid.appendChild(t);
 }
-
-// ── RENDER DETAIL ──
-function renderDetail() {
+function renderDetail(){
   const sheet=currentSheet?(db.sheets[currentColor]||[]).find(s=>s.id===currentSheet):null;
   document.getElementById('detail-header-title').textContent=sheet?(sheet.name||'Sheet'):'New Sheet';
   document.getElementById('d-name').value=sheet?.name||'';
@@ -266,120 +256,110 @@ function renderDetail() {
   document.getElementById('d-notes').value=sheet?.notes||'';
   document.getElementById('d-stock').textContent=sheet?.qty??1;
   document.getElementById('btn-delete').style.display=sheet?'block':'none';
-  pendingUrl=null; uploading=false;
-  const img=document.getElementById('detail-img'), empty=document.getElementById('detail-empty-icon');
-  if(sheet?.photo){ img.src=sheet.photo; img.style.display='block'; empty.style.display='none'; }
-  else { img.src=''; img.style.display='none'; empty.style.display='flex'; }
+  pendingUrl=null;uploading=false;
+  const img=document.getElementById('detail-img'),empty=document.getElementById('detail-empty-icon');
+  if(sheet?.photo){img.src=sheet.photo;img.style.display='block';empty.style.display='none'}
+  else{img.src='';img.style.display='none';empty.style.display='flex'}
   document.getElementById('detail-uploading').style.display='none';
-  document.getElementById('photo-btn').style.display='block';
 }
+function nudgeStock(d){const el=document.getElementById('d-stock');el.textContent=Math.max(0,parseInt(el.textContent)+d)}
 
-function nudgeStock(d) {
-  const el=document.getElementById('d-stock');
-  el.textContent=Math.max(0,parseInt(el.textContent)+d);
-}
-
-// ── PHOTO PICK — uses input click + change event, with focus-based fallback for Android ──
-function pickPhoto() {
-  const input = document.getElementById('fileInput');
-  // Reset value so change fires even if same file selected again
-  input.value = '';
-  input.click();
-}
-
-// Primary handler — fires on most browsers
-document.getElementById('fileInput').addEventListener('change', function(e) {
-  const file = e.target.files && e.target.files[0];
-  if (file) handleFile(file);
-});
-
-// Android fallback — when camera closes, window regains focus
-// We check if a file was selected that we haven't processed yet
-window.addEventListener('focus', function() {
-  const input = document.getElementById('fileInput');
-  if (input.files && input.files[0] && !uploading && !pendingUrl) {
-    // Only trigger if we're on the detail screen and no upload is happening
-    const detailActive = document.getElementById('screen-detail').classList.contains('active');
-    if (detailActive) handleFile(input.files[0]);
-  }
-});
-
-async function handleFile(file) {
-  if (uploading) return;
-  uploading = true;
-
-  // Show local preview immediately
-  const localUrl = URL.createObjectURL(file);
-  const img=document.getElementById('detail-img'), empty=document.getElementById('detail-empty-icon');
-  img.src=localUrl; img.style.display='block'; empty.style.display='none';
-  document.getElementById('detail-uploading').style.display='flex';
-  document.getElementById('photo-btn').style.display='none';
-
-  try {
-    const url = await uploadToImgBB(file);
-    pendingUrl = url;
-    img.src = url;
-    toast('✓ Photo ready — tap Save');
-  } catch(err) {
-    toast('❌ Upload failed — check connection');
-    pendingUrl = null;
-    img.src=''; img.style.display='none'; empty.style.display='flex';
+// ── CAMERA ──
+async function openCamera(){
+  try{
+    cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode,width:{ideal:1920},height:{ideal:1080}},audio:false});
+    document.getElementById('camera-video').srcObject=cameraStream;
+    document.getElementById('camera-overlay').classList.add('open');
+  }catch(err){
+    toast('❌ Camera access denied');
     console.error(err);
-  } finally {
-    uploading = false;
-    document.getElementById('detail-uploading').style.display='none';
-    document.getElementById('photo-btn').style.display='block';
   }
+}
+function closeCamera(){
+  if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null}
+  document.getElementById('camera-overlay').classList.remove('open');
+  document.getElementById('camera-uploading').style.display='none';
+}
+async function flipCamera(){
+  facingMode=facingMode==='environment'?'user':'environment';
+  if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop())}
+  try{
+    cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode,width:{ideal:1920},height:{ideal:1080}},audio:false});
+    document.getElementById('camera-video').srcObject=cameraStream;
+  }catch(err){toast('❌ Could not flip camera')}
+}
+async function takePhoto(){
+  const video=document.getElementById('camera-video');
+  const canvas=document.getElementById('camera-canvas');
+  canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+  canvas.getContext('2d').drawImage(video,0,0);
+
+  // Show uploading inside camera overlay
+  document.getElementById('camera-uploading').style.display='flex';
+
+  canvas.toBlob(async blob=>{
+    try{
+      const url=await uploadToImgBB(blob);
+      pendingUrl=url;
+      // Show in detail screen
+      const img=document.getElementById('detail-img'),empty=document.getElementById('detail-empty-icon');
+      img.src=url;img.style.display='block';empty.style.display='none';
+      closeCamera();
+      toast('✓ Photo ready — tap Save');
+    }catch(err){
+      document.getElementById('camera-uploading').style.display='none';
+      toast('❌ Upload failed — check connection');
+      console.error(err);
+    }
+  },'image/jpeg',0.88);
 }
 
 // ── SAVE ──
-function saveSheet() {
-  if (!currentColor) return;
-  if (uploading) { toast('⏳ Photo still uploading…'); return; }
-  if (!db.sheets[currentColor]) db.sheets[currentColor]=[];
+function saveSheet(){
+  if(!currentColor)return;
+  if(uploading){toast('⏳ Photo still uploading…');return}
+  if(!db.sheets[currentColor])db.sheets[currentColor]=[];
   const name=document.getElementById('d-name').value.trim();
   const w=document.getElementById('d-w').value.trim();
   const h=document.getElementById('d-h').value.trim();
   const qty=parseInt(document.getElementById('d-stock').textContent)||0;
   const notes=document.getElementById('d-notes').value.trim();
-  if (currentSheet) {
+  if(currentSheet){
     const sheet=db.sheets[currentColor].find(s=>s.id===currentSheet);
-    if(sheet){ Object.assign(sheet,{name,w,h,qty,notes}); if(pendingUrl){sheet.photo=pendingUrl;pendingUrl=null;} }
-    saveMeta(); toast('✓ Saved');
+    if(sheet){Object.assign(sheet,{name,w,h,qty,notes});if(pendingUrl){sheet.photo=pendingUrl;pendingUrl=null}}
+    saveMeta();toast('✓ Saved');
     document.getElementById('detail-header-title').textContent=name||'Sheet';
-  } else {
+  }else{
     const id='sh_'+Date.now();
     db.sheets[currentColor].push({id,name,w,h,qty,notes,photo:pendingUrl||null});
-    pendingUrl=null; currentSheet=id; saveMeta(); toast('✓ Saved');
+    pendingUrl=null;currentSheet=id;saveMeta();toast('✓ Saved');
     document.getElementById('detail-header-title').textContent=name||'Sheet';
     document.getElementById('btn-delete').style.display='block';
   }
 }
-
-function deleteSheet() {
-  if(!currentSheet||!currentColor) return;
-  if(!confirm('Delete this sheet?')) return;
+function deleteSheet(){
+  if(!currentSheet||!currentColor)return;
+  if(!confirm('Delete this sheet?'))return;
   db.sheets[currentColor]=(db.sheets[currentColor]||[]).filter(s=>s.id!==currentSheet);
-  saveMeta(); showColor(currentColor);
+  saveMeta();showColor(currentColor);
 }
 
 // ── ADD COLOR ──
 const PRESET_DOTS=['#c0392b','#e67e22','#f1c40f','#f4d03f','#27ae60','#1abc9c','#2980b9','#3498db','#8e44ad','#e91e8c','#795548','#607d8b','#1a1a1a','#bdc3c7','#00bcd4','#ff5722'];
-function openAddColorModal() {
-  selectedHex=PRESET_DOTS[0];
-  document.getElementById('mc-name').value=''; document.getElementById('mc-hex').value=selectedHex;
-  const row=document.getElementById('mc-dot-row'); row.innerHTML='';
+function openAddColorModal(){
+  selectedHex=PRESET_DOTS[0];document.getElementById('mc-name').value='';document.getElementById('mc-hex').value=selectedHex;
+  const row=document.getElementById('mc-dot-row');row.innerHTML='';
   PRESET_DOTS.forEach(hex=>{
-    const dot=document.createElement('div'); dot.className='color-dot'+(hex===selectedHex?' selected':''); dot.style.background=hex;
-    dot.onclick=()=>{ row.querySelectorAll('.color-dot').forEach(d=>d.classList.remove('selected')); dot.classList.add('selected'); selectedHex=hex; document.getElementById('mc-hex').value=hex; };
+    const dot=document.createElement('div');dot.className='color-dot'+(hex===selectedHex?' selected':'');dot.style.background=hex;
+    dot.onclick=()=>{row.querySelectorAll('.color-dot').forEach(d=>d.classList.remove('selected'));dot.classList.add('selected');selectedHex=hex;document.getElementById('mc-hex').value=hex};
     row.appendChild(dot);
   });
-  openModal('modal-color'); setTimeout(()=>document.getElementById('mc-name').focus(),300);
+  openModal('modal-color');setTimeout(()=>document.getElementById('mc-name').focus(),300);
 }
-function confirmAddColor() {
-  const name=document.getElementById('mc-name').value.trim(), hex=document.getElementById('mc-hex').value||selectedHex;
-  if(!name){document.getElementById('mc-name').focus();return;}
-  db.colors.push({id:'c_'+Date.now(),name,hex}); saveMeta(); closeModal('modal-color'); renderHome(); toast(`✓ "${name}" added`);
+function confirmAddColor(){
+  const name=document.getElementById('mc-name').value.trim(),hex=document.getElementById('mc-hex').value||selectedHex;
+  if(!name){document.getElementById('mc-name').focus();return}
+  db.colors.push({id:'c_'+Date.now(),name,hex});saveMeta();closeModal('modal-color');renderHome();toast(`✓ "${name}" added`);
 }
 
 function openModal(id){document.getElementById(id).classList.add('open')}
@@ -389,7 +369,7 @@ document.querySelectorAll('.modal-overlay').forEach(el=>el.addEventListener('cli
 let toastTimer;
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2500)}
 
-if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
 
 document.getElementById('loading').style.display='none';
 showHome();
