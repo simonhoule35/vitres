@@ -414,13 +414,23 @@ function nudgeStock(delta) {
 
 function setUploading(val) {
   uploading = val;
+  // just show a small uploading indicator — never block Save
   document.getElementById('detail-uploading').style.display = val ? 'flex' : 'none';
   document.getElementById('photo-btn').style.display = val ? 'none' : 'block';
-  document.getElementById('btn-save').disabled = val;
 }
 
-function saveSheet() {
-  if (!currentColor || uploading) return;
+async function saveSheet() {
+  if (!currentColor) return;
+  // if still uploading, wait for it to finish first
+  if (uploading) {
+    toast('⏳ Waiting for photo…');
+    let waited = 0;
+    while (uploading && waited < 15000) {
+      await new Promise(r => setTimeout(r, 300));
+      waited += 300;
+    }
+    if (uploading) { toast('❌ Photo upload timed out'); return; }
+  }
   if (!db.sheets[currentColor]) db.sheets[currentColor] = [];
   const name  = document.getElementById('d-name').value.trim();
   const w     = document.getElementById('d-w').value.trim();
@@ -463,17 +473,24 @@ document.getElementById('fileInput').addEventListener('change', async e => {
   const file = e.target.files[0];
   if (!file) return;
   e.target.value = '';
+
+  // Show preview immediately from local file — no waiting
+  const localUrl = URL.createObjectURL(file);
+  const img   = document.getElementById('detail-img');
+  const empty = document.getElementById('detail-empty-icon');
+  img.src = localUrl; img.style.display='block'; empty.style.display='none';
+
+  // Upload in background — show spinner overlay but keep Save enabled
   setUploading(true);
   try {
     const url = await uploadToImgBB(file);
     pendingUrl = url;
-    const img   = document.getElementById('detail-img');
-    const empty = document.getElementById('detail-empty-icon');
-    img.src = url; img.style.display='block'; empty.style.display='none';
-    toast('✓ Photo uploaded');
+    img.src = url; // swap to hosted URL
+    toast('✓ Photo ready');
   } catch(err) {
     toast('❌ Upload failed — check connection');
-    console.error(err);
+    pendingUrl = null;
+    img.src=''; img.style.display='none'; empty.style.display='flex';
   } finally {
     setUploading(false);
   }
