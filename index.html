@@ -7,19 +7,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Glass" />
-
-  <!-- ============================================================
-       APP ICON
-       Replace icon-192.png and icon-512.png with your own square
-       PNG images (same filenames, same folder as index.html).
-       192×192 px minimum. 512×512 px recommended.
-  ============================================================ -->
   <link rel="apple-touch-icon" href="icon-192.png" />
   <link rel="manifest" href="manifest.json" />
-
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-
   <title>Glass Inventory</title>
   <style>
     :root {
@@ -38,280 +29,109 @@
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bot: env(safe-area-inset-bottom, 0px);
     }
-
     * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px; min-height:100dvh; overscroll-behavior:none; }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      min-height: 100dvh;
-      overscroll-behavior: none;
-    }
-
-    /* ── HEADER ── */
     .header {
-      position: sticky; top: 0; z-index: 100;
-      background: var(--bg);
-      padding: calc(var(--safe-top) + 14px) 18px 12px;
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 10px;
+      position:sticky; top:0; z-index:100; background:var(--bg);
+      padding:calc(var(--safe-top) + 14px) 18px 12px;
+      border-bottom:1px solid var(--border);
+      display:flex; align-items:center; gap:10px;
     }
-    .header-back {
-      font-size: 24px; color: var(--gold);
-      background: none; border: none; cursor: pointer;
-      padding: 0 6px 0 0; display: none;
-    }
-    .header-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 24px; font-weight: 700;
-      color: var(--text); flex: 1;
-    }
-    .header-sub { font-size: 11px; color: var(--muted); font-weight: 300; margin-top: 1px; }
-    .header-add {
-      width: 36px; height: 36px; border-radius: 50%;
-      background: var(--gold); border: none; cursor: pointer;
-      font-size: 20px; color: #111;
-      display: flex; align-items: center; justify-content: center;
-      transition: transform .15s, opacity .15s; flex-shrink: 0;
-    }
-    .header-add:active { transform: scale(.9); opacity: .8; }
+    .header-back { font-size:24px; color:var(--gold); background:none; border:none; cursor:pointer; padding:0 6px 0 0; display:none; }
+    .header-title { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:700; color:var(--text); flex:1; }
+    .header-sub { font-size:11px; color:var(--muted); font-weight:300; margin-top:1px; }
+    .header-add { width:36px; height:36px; border-radius:50%; background:var(--gold); border:none; cursor:pointer; font-size:20px; color:#111; display:flex; align-items:center; justify-content:center; transition:transform .15s,opacity .15s; flex-shrink:0; }
+    .header-add:active { transform:scale(.9); opacity:.8; }
 
-    /* ── SCREENS ── */
-    .screen { display: none; animation: fadeUp .2s ease; }
-    .screen.active { display: block; }
-    @keyframes fadeUp {
-      from { opacity:0; transform:translateY(8px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
+    .screen { display:none; animation:fadeUp .2s ease; }
+    .screen.active { display:block; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 
-    /* ── COLOR GRID ── */
-    .color-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 10px; padding: 16px;
-    }
-    .color-chip {
-      border-radius: var(--radius); overflow: hidden;
-      border: 1px solid var(--border); cursor: pointer;
-      background: var(--surface);
-      transition: transform .15s, border-color .15s;
-    }
-    .color-chip:active { transform: scale(.95); }
-    .chip-swatch { height: 68px; position: relative; }
-    .chip-swatch-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(to bottom, transparent 40%, #00000055);
-    }
-    .chip-label {
-      padding: 7px 9px;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .chip-name  { font-size: 11px; font-weight: 500; }
-    .chip-count { font-size: 10px; color: var(--muted); }
+    .color-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:16px; }
+    .color-chip { border-radius:var(--radius); overflow:hidden; border:1px solid var(--border); cursor:pointer; background:var(--surface); transition:transform .15s; }
+    .color-chip:active { transform:scale(.95); }
+    .chip-swatch { height:68px; position:relative; }
+    .chip-swatch-overlay { position:absolute; inset:0; background:linear-gradient(to bottom,transparent 40%,#00000055); }
+    .chip-label { padding:7px 9px; display:flex; justify-content:space-between; align-items:center; }
+    .chip-name  { font-size:11px; font-weight:500; }
+    .chip-count { font-size:10px; color:var(--muted); }
+    .add-color-tile { border-radius:var(--radius); border:1.5px dashed var(--border); cursor:pointer; height:106px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; transition:border-color .2s,background .2s; }
+    .add-color-tile:active { background:var(--surface); border-color:var(--gold-dim); }
+    .add-color-tile span:first-child { font-size:22px; color:var(--muted); }
+    .add-color-tile span:last-child  { font-size:10px; color:var(--muted); }
 
-    .add-color-tile {
-      border-radius: var(--radius);
-      border: 1.5px dashed var(--border);
-      cursor: pointer; height: 106px;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 5px;
-      transition: border-color .2s, background .2s;
-    }
-    .add-color-tile:active { background: var(--surface); border-color: var(--gold-dim); }
-    .add-color-tile span:first-child { font-size: 22px; color: var(--muted); }
-    .add-color-tile span:last-child  { font-size: 10px; color: var(--muted); }
-
-    /* ── SHEET GRID ── */
-    .sheet-grid {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 10px; padding: 14px 16px;
-    }
-    .sheet-card {
-      background: var(--surface); border-radius: var(--radius);
-      overflow: hidden; border: 1px solid var(--border);
-      cursor: pointer; transition: transform .15s;
-    }
-    .sheet-card:active { transform: scale(.97); }
-    .sheet-photo {
-      width: 100%; aspect-ratio: 1;
-      background: var(--surface2); overflow: hidden;
-      display: flex; align-items: center; justify-content: center;
-    }
+    .sheet-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:14px 16px; }
+    .sheet-card { background:var(--surface); border-radius:var(--radius); overflow:hidden; border:1px solid var(--border); cursor:pointer; transition:transform .15s; }
+    .sheet-card:active { transform:scale(.97); }
+    .sheet-photo { width:100%; aspect-ratio:1; background:var(--surface2); overflow:hidden; display:flex; align-items:center; justify-content:center; position:relative; }
     .sheet-photo img { width:100%; height:100%; object-fit:cover; }
-    .sheet-photo-empty { font-size: 28px; opacity: .25; }
-    .sheet-info { padding: 8px 10px; }
-    .sheet-name { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .sheet-size { font-size: 10px; color: var(--muted); margin-top: 2px; }
-    .sheet-stock-ok   { font-size: 10px; color: var(--ok);    margin-top: 4px; font-weight: 500; }
-    .sheet-stock-warn { font-size: 10px; color: var(--warn);  margin-top: 4px; font-weight: 500; }
-    .sheet-stock-out  { font-size: 10px; color: var(--danger);margin-top: 4px; font-weight: 500; }
+    .sheet-photo-empty { font-size:28px; opacity:.25; }
+    .sheet-uploading { position:absolute; inset:0; background:#000000aa; display:flex; align-items:center; justify-content:center; font-size:11px; color:#fff; }
+    .sheet-info { padding:8px 10px; }
+    .sheet-name { font-size:12px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .sheet-size { font-size:10px; color:var(--muted); margin-top:2px; }
+    .sheet-stock-ok   { font-size:10px; color:var(--ok);    margin-top:4px; font-weight:500; }
+    .sheet-stock-warn { font-size:10px; color:var(--warn);  margin-top:4px; font-weight:500; }
+    .sheet-stock-out  { font-size:10px; color:var(--danger);margin-top:4px; font-weight:500; }
+    .add-sheet-tile { background:var(--surface); border-radius:var(--radius); border:1.5px dashed var(--border); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; aspect-ratio:1; transition:border-color .2s,background .2s; }
+    .add-sheet-tile:active { background:var(--surface2); border-color:var(--gold-dim); }
+    .add-sheet-tile span:first-child { font-size:24px; color:var(--muted); }
+    .add-sheet-tile span:last-child  { font-size:10px; color:var(--muted); text-align:center; padding:0 8px; }
 
-    .add-sheet-tile {
-      background: var(--surface); border-radius: var(--radius);
-      border: 1.5px dashed var(--border);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 6px; cursor: pointer; aspect-ratio: 1;
-      transition: border-color .2s, background .2s;
-    }
-    .add-sheet-tile:active { background: var(--surface2); border-color: var(--gold-dim); }
-    .add-sheet-tile span:first-child { font-size: 24px; color: var(--muted); }
-    .add-sheet-tile span:last-child  { font-size: 10px; color: var(--muted); text-align:center; padding: 0 8px; }
-
-    /* ── DETAIL SCREEN ── */
-    .detail-photo {
-      width: 100%; aspect-ratio: 4/3;
-      background: var(--surface2); position: relative; overflow: hidden;
-      display: flex; align-items: center; justify-content: center;
-    }
+    .detail-photo { width:100%; aspect-ratio:4/3; background:var(--surface2); position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
     .detail-photo img { width:100%; height:100%; object-fit:cover; }
-    .detail-photo-empty { font-size: 64px; opacity: .15; }
-    .detail-photo-btn {
-      position: absolute; bottom: 12px; right: 12px;
-      background: #000000aa; border: 1px solid #ffffff22;
-      color: #fff; border-radius: 20px;
-      padding: 7px 16px; font-size: 12px; cursor: pointer;
-      backdrop-filter: blur(6px); font-family: 'DM Sans', sans-serif;
-    }
-    .detail-photo-btn:active { background: #000000cc; }
+    .detail-photo-empty { font-size:64px; opacity:.15; }
+    .detail-photo-btn { position:absolute; bottom:12px; right:12px; background:#000000aa; border:1px solid #ffffff22; color:#fff; border-radius:20px; padding:7px 16px; font-size:12px; cursor:pointer; backdrop-filter:blur(6px); font-family:'DM Sans',sans-serif; }
+    .detail-uploading { position:absolute; inset:0; background:#000000bb; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; font-size:13px; color:#fff; }
+    .upload-spinner { width:28px; height:28px; border:2px solid #ffffff33; border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; }
 
-    .detail-body { padding: 18px 16px; }
-    .detail-field { margin-bottom: 16px; }
-    .detail-field label {
-      display: block; font-size: 10px; text-transform: uppercase;
-      letter-spacing: 1px; color: var(--muted); margin-bottom: 6px;
-    }
-    .detail-field input,
-    .detail-field textarea {
-      width: 100%; background: var(--surface2);
-      border: 1px solid var(--border); border-radius: 9px;
-      padding: 10px 12px; color: var(--text);
-      font-family: 'DM Sans', sans-serif; font-size: 14px;
-      outline: none; transition: border-color .15s;
-    }
-    .detail-field input:focus,
-    .detail-field textarea:focus { border-color: var(--gold-dim); }
-    .detail-field textarea { resize: none; height: 72px; }
-    .row { display: flex; gap: 10px; }
-    .row input { flex: 1; }
+    .detail-body { padding:18px 16px; }
+    .detail-field { margin-bottom:16px; }
+    .detail-field label { display:block; font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:6px; }
+    .detail-field input, .detail-field textarea { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:9px; padding:10px 12px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px; outline:none; transition:border-color .15s; }
+    .detail-field input:focus, .detail-field textarea:focus { border-color:var(--gold-dim); }
+    .detail-field textarea { resize:none; height:72px; }
+    .row { display:flex; gap:10px; }
+    .row input { flex:1; }
 
-    .stock-row { display: flex; align-items: center; gap: 16px; }
-    .stock-btn {
-      width: 36px; height: 36px; border-radius: 50%;
-      background: var(--surface2); border: 1px solid var(--border);
-      color: var(--text); font-size: 20px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: background .15s;
-    }
-    .stock-btn:active { background: var(--border); }
-    .stock-val { font-size: 24px; font-weight: 600; min-width: 30px; text-align: center; }
+    .stock-row { display:flex; align-items:center; gap:16px; }
+    .stock-btn { width:36px; height:36px; border-radius:50%; background:var(--surface2); border:1px solid var(--border); color:var(--text); font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s; }
+    .stock-btn:active { background:var(--border); }
+    .stock-val { font-size:24px; font-weight:600; min-width:30px; text-align:center; }
 
-    .btn-row {
-      display: flex; gap: 10px; margin-top: 24px;
-      padding-bottom: calc(var(--safe-bot) + 24px);
-    }
-    .btn-save {
-      flex: 1; padding: 14px;
-      background: var(--gold); color: #111;
-      border: none; border-radius: var(--radius);
-      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
-      cursor: pointer; transition: opacity .15s;
-    }
-    .btn-save:active { opacity: .8; }
-    .btn-delete {
-      padding: 14px 16px;
-      background: transparent; color: var(--danger);
-      border: 1px solid #3a1212; border-radius: var(--radius);
-      font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer;
-      transition: background .15s;
-    }
-    .btn-delete:active { background: #1e0808; }
+    .btn-row { display:flex; gap:10px; margin-top:24px; padding-bottom:calc(var(--safe-bot) + 24px); }
+    .btn-save { flex:1; padding:14px; background:var(--gold); color:#111; border:none; border-radius:var(--radius); font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; transition:opacity .15s; }
+    .btn-save:active { opacity:.8; }
+    .btn-save:disabled { opacity:.4; cursor:not-allowed; }
+    .btn-delete { padding:14px 16px; background:transparent; color:var(--danger); border:1px solid #3a1212; border-radius:var(--radius); font-family:'DM Sans',sans-serif; font-size:13px; cursor:pointer; }
+    .btn-delete:active { background:#1e0808; }
 
-    /* ── MODAL ── */
-    .modal-overlay {
-      display: none; position: fixed; inset: 0;
-      background: #000000bb; z-index: 200;
-      align-items: flex-end; justify-content: center;
-      backdrop-filter: blur(4px);
-    }
-    .modal-overlay.open { display: flex; animation: fadeIn .2s ease; }
-    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-    .modal {
-      background: var(--surface); border-radius: 20px 20px 0 0;
-      width: 100%; max-width: 500px;
-      padding: 22px 18px calc(var(--safe-bot) + 22px);
-      border-top: 1px solid var(--border);
-      animation: slideUp .25s ease;
-    }
-    @keyframes slideUp {
-      from { transform: translateY(40px); opacity:0; }
-      to   { transform: translateY(0);    opacity:1; }
-    }
-    .modal-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 21px; font-weight: 700; margin-bottom: 18px;
-    }
-    .modal-field { margin-bottom: 14px; }
-    .modal-field label {
-      display: block; font-size: 10px; text-transform: uppercase;
-      letter-spacing: 1px; color: var(--muted); margin-bottom: 6px;
-    }
-    .modal-field input {
-      width: 100%; background: var(--surface2);
-      border: 1px solid var(--border); border-radius: 9px;
-      padding: 10px 12px; color: var(--text);
-      font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none;
-    }
-    .modal-field input:focus { border-color: var(--gold-dim); }
-    .color-dot-row { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 4px; }
-    .color-dot {
-      width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
-      border: 2px solid transparent; transition: transform .15s;
-    }
-    .color-dot.selected { border-color: var(--gold); transform: scale(1.18); }
-    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
-    .modal-btn-cancel {
-      flex: 1; padding: 12px;
-      background: var(--surface2); color: var(--muted);
-      border: 1px solid var(--border); border-radius: var(--radius);
-      font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer;
-    }
-    .modal-btn-ok {
-      flex: 2; padding: 12px;
-      background: var(--gold); color: #111;
-      border: none; border-radius: var(--radius);
-      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer;
-    }
+    .modal-overlay { display:none; position:fixed; inset:0; background:#000000bb; z-index:200; align-items:flex-end; justify-content:center; backdrop-filter:blur(4px); }
+    .modal-overlay.open { display:flex; animation:fadeIn .2s ease; }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    .modal { background:var(--surface); border-radius:20px 20px 0 0; width:100%; max-width:500px; padding:22px 18px calc(var(--safe-bot) + 22px); border-top:1px solid var(--border); animation:slideUp .25s ease; }
+    @keyframes slideUp { from{transform:translateY(40px);opacity:0} to{transform:translateY(0);opacity:1} }
+    .modal-title { font-family:'Cormorant Garamond',serif; font-size:21px; font-weight:700; margin-bottom:18px; }
+    .modal-field { margin-bottom:14px; }
+    .modal-field label { display:block; font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:6px; }
+    .modal-field input { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:9px; padding:10px 12px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px; outline:none; }
+    .modal-field input:focus { border-color:var(--gold-dim); }
+    .color-dot-row { display:flex; flex-wrap:wrap; gap:9px; margin-top:4px; }
+    .color-dot { width:30px; height:30px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:transform .15s; }
+    .color-dot.selected { border-color:var(--gold); transform:scale(1.18); }
+    .modal-actions { display:flex; gap:10px; margin-top:20px; }
+    .modal-btn-cancel { flex:1; padding:12px; background:var(--surface2); color:var(--muted); border:1px solid var(--border); border-radius:var(--radius); font-family:'DM Sans',sans-serif; font-size:14px; cursor:pointer; }
+    .modal-btn-ok { flex:2; padding:12px; background:var(--gold); color:#111; border:none; border-radius:var(--radius); font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; }
 
-    /* ── LOADING ── */
-    .loading {
-      position: fixed; inset: 0; background: var(--bg);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 999; font-size: 13px; color: var(--muted);
-      flex-direction: column; gap: 12px;
-    }
-    .loading-spinner {
-      width: 28px; height: 28px; border: 2px solid var(--border);
-      border-top-color: var(--gold); border-radius: 50%;
-      animation: spin .7s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading { position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:999; flex-direction:column; gap:12px; }
+    .loading-spinner { width:28px; height:28px; border:2px solid var(--border); border-top-color:var(--gold); border-radius:50%; animation:spin .7s linear infinite; }
+    @keyframes spin { to{transform:rotate(360deg)} }
 
-    /* ── TOAST ── */
-    .toast {
-      position: fixed; bottom: calc(var(--safe-bot) + 20px); left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: #2a2a2a; border: 1px solid var(--border);
-      color: var(--text); padding: 10px 20px; border-radius: 20px;
-      font-size: 13px; opacity: 0; pointer-events: none;
-      transition: opacity .2s, transform .2s; z-index: 999;
-      white-space: nowrap;
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast { position:fixed; bottom:calc(var(--safe-bot) + 20px); left:50%; transform:translateX(-50%) translateY(20px); background:#2a2a2a; border:1px solid var(--border); color:var(--text); padding:10px 20px; border-radius:20px; font-size:13px; opacity:0; pointer-events:none; transition:opacity .2s,transform .2s; z-index:999; white-space:nowrap; }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-    #fileInput { display: none; }
-    #resizeCanvas { display: none; }
+    #fileInput { display:none; }
   </style>
 </head>
 <body>
@@ -357,9 +177,11 @@
   <div class="detail-photo" id="detail-photo-wrap">
     <div class="detail-photo-empty" id="detail-empty-icon">🪟</div>
     <img id="detail-img" src="" alt="" style="display:none" />
-    <button class="detail-photo-btn" onclick="document.getElementById('fileInput').click()">
-      📷 Change photo
-    </button>
+    <div class="detail-uploading" id="detail-uploading" style="display:none">
+      <div class="upload-spinner"></div>
+      <span>Uploading photo…</span>
+    </div>
+    <button class="detail-photo-btn" id="photo-btn" onclick="document.getElementById('fileInput').click()">📷 Change photo</button>
   </div>
   <div class="detail-body">
     <div class="detail-field">
@@ -386,7 +208,7 @@
       <textarea id="d-notes" placeholder="Texture, supplier, project ideas…"></textarea>
     </div>
     <div class="btn-row">
-      <button class="btn-save" onclick="saveSheet()">Save</button>
+      <button class="btn-save" id="btn-save" onclick="saveSheet()">Save</button>
       <button class="btn-delete" id="btn-delete" onclick="deleteSheet()">Delete</button>
     </div>
   </div>
@@ -406,9 +228,7 @@
     </div>
     <div class="modal-field">
       <label>Or custom hex</label>
-      <input id="mc-hex" type="color" value="#44aa77"
-             style="height:40px;padding:4px 8px;cursor:pointer;"
-             oninput="selectedHex=this.value" />
+      <input id="mc-hex" type="color" value="#44aa77" style="height:40px;padding:4px 8px;cursor:pointer;" oninput="selectedHex=this.value" />
     </div>
     <div class="modal-actions">
       <button class="modal-btn-cancel" onclick="closeModal('modal-color')">Cancel</button>
@@ -417,96 +237,43 @@
   </div>
 </div>
 
-<canvas id="resizeCanvas"></canvas>
 <input type="file" id="fileInput" accept="image/*" capture="environment" />
 <div class="toast" id="toast"></div>
 
 <script>
 // ══════════════════════════════════════════════
-// INDEXEDDB — no storage limits, full quality photos
+// IMGBB API
+// ── Photos upload to ImgBB, only the URL is saved locally
+// ── Unlimited storage, full quality
 // ══════════════════════════════════════════════
-const DB_NAME    = 'GlassInventory';
-const DB_VERSION = 1;
-const STORE_META = 'meta';    // colors + sheet info (no photos)
-const STORE_PHOTOS = 'photos'; // photos stored as blobs, keyed by sheet id
+const IMGBB_KEY = 'e0654afe8c56226b8277812d3a432fb2'; // ← your ImgBB API key
 
-let idb; // the IndexedDB instance
-
-function openDB() {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, DB_VERSION);
-    req.onupgradeneeded = e => {
-      const db = e.target.result;
-      if (!db.objectStoreNames.contains(STORE_META))   db.createObjectStore(STORE_META);
-      if (!db.objectStoreNames.contains(STORE_PHOTOS)) db.createObjectStore(STORE_PHOTOS);
-    };
-    req.onsuccess = e => resolve(e.target.result);
-    req.onerror   = e => reject(e.target.error);
+async function uploadToImgBB(file) {
+  const form = new FormData();
+  form.append('image', file);
+  const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
+    method: 'POST',
+    body: form
   });
-}
-
-function idbGet(store, key) {
-  return new Promise((resolve, reject) => {
-    const tx  = idb.transaction(store, 'readonly');
-    const req = tx.objectStore(store).get(key);
-    req.onsuccess = () => resolve(req.result);
-    req.onerror   = () => reject(req.error);
-  });
-}
-
-function idbSet(store, key, value) {
-  return new Promise((resolve, reject) => {
-    const tx  = idb.transaction(store, 'readwrite');
-    const req = tx.objectStore(store).put(value, key);
-    req.onsuccess = () => resolve();
-    req.onerror   = () => reject(req.error);
-  });
-}
-
-function idbDelete(store, key) {
-  return new Promise((resolve, reject) => {
-    const tx  = idb.transaction(store, 'readwrite');
-    const req = tx.objectStore(store).delete(key);
-    req.onsuccess = () => resolve();
-    req.onerror   = () => reject(req.error);
-  });
+  if (!res.ok) throw new Error('Upload failed: ' + res.status);
+  const json = await res.json();
+  if (!json.success) throw new Error('ImgBB error: ' + json.error?.message);
+  return json.data.url; // direct image URL
 }
 
 // ══════════════════════════════════════════════
-// PHOTO RESIZE
-// Photos resized to max 800px — sharp & clear on phone
-// Stored as JPEG blob in IndexedDB (not base64 string)
+// STORAGE — localStorage for meta only (no photos, just URLs)
 // ══════════════════════════════════════════════
-const MAX_PX  = 800;   // ← max pixels on longest side
-const QUALITY = 0.82;  // ← JPEG quality
+const KEY = 'glassinv_v2';
 
-function resizeToBlob(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = reject;
-    reader.onload  = ev => {
-      const img = new Image();
-      img.onerror = reject;
-      img.onload  = () => {
-        const canvas = document.getElementById('resizeCanvas');
-        let w = img.naturalWidth, h = img.naturalHeight;
-        if (w > h) { if (w > MAX_PX) { h = Math.round(h * MAX_PX / w); w = MAX_PX; } }
-        else        { if (h > MAX_PX) { w = Math.round(w * MAX_PX / h); h = MAX_PX; } }
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        canvas.toBlob(blob => blob ? resolve(blob) : reject('toBlob failed'), 'image/jpeg', QUALITY);
-      };
-      img.src = ev.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
+function loadMeta() {
+  try { return JSON.parse(localStorage.getItem(KEY)) || defaultMeta(); }
+  catch { return defaultMeta(); }
+}
+function saveMeta() {
+  localStorage.setItem(KEY, JSON.stringify(db));
 }
 
-function blobToUrl(blob) { return URL.createObjectURL(blob); }
-
-// ══════════════════════════════════════════════
-// DATA HELPERS
-// ══════════════════════════════════════════════
 function defaultMeta() {
   return {
     colors: [
@@ -527,25 +294,15 @@ function defaultMeta() {
   };
 }
 
-async function loadMeta() {
-  const saved = await idbGet(STORE_META, 'data');
-  return saved || defaultMeta();
-}
-
-async function saveMeta() {
-  await idbSet(STORE_META, 'data', db);
-}
-
 // ══════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════
-let db           = null;
+let db           = loadMeta();
 let currentColor = null;
 let currentSheet = null;
-let pendingBlob  = null;   // resized Blob waiting to save
-let pendingUrl   = null;   // object URL for preview
+let pendingUrl   = null;  // ImgBB URL after upload
+let uploading    = false;
 let selectedHex  = '#c0392b';
-let photoUrlCache = {};    // sheetId → object URL (avoids re-fetching)
 
 // ══════════════════════════════════════════════
 // SCREENS
@@ -555,52 +312,27 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
   window.scrollTo(0, 0);
 }
-
-async function showHome() {
-  await renderHome();
-  showScreen('screen-home');
-}
-
-async function showColor(colorId) {
-  currentColor = colorId;
-  await renderColor(colorId);
-  showScreen('screen-color');
-  document.getElementById('back-color').style.display = 'flex';
-}
-
-async function showDetail(colorId, sheetId) {
-  currentColor = colorId;
-  currentSheet = sheetId;
-  await renderDetail();
-  showScreen('screen-detail');
-}
-
-function goNewSheet() { showDetail(currentColor, null); }
+function showHome()              { renderHome();         showScreen('screen-home'); }
+function showColor(colorId)      { currentColor=colorId; renderColor(colorId); showScreen('screen-color'); document.getElementById('back-color').style.display='flex'; }
+function showDetail(colorId, id) { currentColor=colorId; currentSheet=id; renderDetail(); showScreen('screen-detail'); }
+function goNewSheet()            { showDetail(currentColor, null); }
 
 // ══════════════════════════════════════════════
 // RENDER — HOME
 // ══════════════════════════════════════════════
-async function renderHome() {
-  const total = Object.values(db.sheets).reduce((s, a) => s + a.length, 0);
-  document.getElementById('home-sub').textContent =
-    `${db.colors.length} colors · ${total} sheet${total !== 1 ? 's' : ''} total`;
-
+function renderHome() {
+  const total = Object.values(db.sheets).reduce((s,a)=>s+a.length,0);
+  document.getElementById('home-sub').textContent = `${db.colors.length} colors · ${total} sheet${total!==1?'s':''} total`;
   const grid = document.getElementById('color-grid');
   grid.innerHTML = '';
-
   db.colors.forEach(c => {
     const sheets = db.sheets[c.id] || [];
-    const chip   = document.createElement('div');
+    const chip = document.createElement('div');
     chip.className = 'color-chip';
-    chip.onclick   = () => showColor(c.id);
-
-    const isClear = c.id === 'clear';
-    const swatchStyle = isClear
-      ? `background: repeating-conic-gradient(#aaa 0% 25%, #ddd 0% 50%) 0 0 / 14px 14px;`
-      : `background:${c.hex};`;
-
+    chip.onclick = () => showColor(c.id);
+    const isClear = c.id==='clear';
     chip.innerHTML = `
-      <div class="chip-swatch" style="${swatchStyle}">
+      <div class="chip-swatch" style="${isClear?'background:repeating-conic-gradient(#aaa 0% 25%,#ddd 0% 50%) 0 0/14px 14px':'background:'+c.hex}">
         <div class="chip-swatch-overlay"></div>
       </div>
       <div class="chip-label">
@@ -609,108 +341,67 @@ async function renderHome() {
       </div>`;
     grid.appendChild(chip);
   });
-
   const tile = document.createElement('div');
-  tile.className = 'add-color-tile';
-  tile.onclick   = openAddColorModal;
-  tile.innerHTML = `<span>＋</span><span>Add color</span>`;
+  tile.className='add-color-tile'; tile.onclick=openAddColorModal;
+  tile.innerHTML='<span>＋</span><span>Add color</span>';
   grid.appendChild(tile);
 }
 
 // ══════════════════════════════════════════════
 // RENDER — COLOR
 // ══════════════════════════════════════════════
-async function renderColor(colorId) {
-  const color  = db.colors.find(c => c.id === colorId);
+function renderColor(colorId) {
+  const color  = db.colors.find(c=>c.id===colorId);
   const sheets = db.sheets[colorId] || [];
-
   const titleEl = document.getElementById('color-title');
   titleEl.textContent = color.name;
-  titleEl.style.color = (colorId === 'black' || colorId === 'white') ? 'var(--text)' : color.hex;
-  document.getElementById('color-sub').textContent =
-    `${sheets.length} sheet${sheets.length !== 1 ? 's' : ''}`;
-
+  titleEl.style.color = (colorId==='black'||colorId==='white') ? 'var(--text)' : color.hex;
+  document.getElementById('color-sub').textContent = `${sheets.length} sheet${sheets.length!==1?'s':''}`;
   const grid = document.getElementById('sheet-grid');
   grid.innerHTML = '';
-
-  for (const sheet of sheets) {
+  sheets.forEach(sheet => {
     const card = document.createElement('div');
-    card.className = 'sheet-card';
-    card.onclick   = () => showDetail(colorId, sheet.id);
-
-    const stockClass = sheet.qty === 0 ? 'sheet-stock-out'
-                     : sheet.qty === 1 ? 'sheet-stock-warn'
-                     : 'sheet-stock-ok';
-    const stockText  = sheet.qty === 0 ? '✗ Out of stock'
-                     : sheet.qty === 1 ? '⚠ 1 left'
-                     : `✓ ${sheet.qty} in stock`;
-
-    // Load photo from IndexedDB if needed
-    let photoHtml = `<div class="sheet-photo-empty">🪟</div>`;
-    if (sheet.hasPhoto) {
-      if (!photoUrlCache[sheet.id]) {
-        const blob = await idbGet(STORE_PHOTOS, sheet.id);
-        if (blob) photoUrlCache[sheet.id] = blobToUrl(blob);
-      }
-      if (photoUrlCache[sheet.id]) {
-        photoHtml = `<img src="${photoUrlCache[sheet.id]}" alt="" loading="lazy" />`;
-      }
-    }
-
+    card.className='sheet-card'; card.onclick=()=>showDetail(colorId,sheet.id);
+    const sc = sheet.qty===0?'sheet-stock-out':sheet.qty===1?'sheet-stock-warn':'sheet-stock-ok';
+    const st = sheet.qty===0?'✗ Out of stock':sheet.qty===1?'⚠ 1 left':`✓ ${sheet.qty} in stock`;
     card.innerHTML = `
-      <div class="sheet-photo">${photoHtml}</div>
+      <div class="sheet-photo">
+        ${sheet.photo?`<img src="${sheet.photo}" alt="" loading="lazy" />`:'<div class="sheet-photo-empty">🪟</div>'}
+      </div>
       <div class="sheet-info">
-        <div class="sheet-name">${sheet.name || 'Unnamed'}</div>
-        <div class="sheet-size">${sheet.w && sheet.h ? sheet.w+'×'+sheet.h+' cm' : '—'}</div>
-        <div class="${stockClass}">${stockText}</div>
+        <div class="sheet-name">${sheet.name||'Unnamed'}</div>
+        <div class="sheet-size">${sheet.w&&sheet.h?sheet.w+'×'+sheet.h+' cm':'—'}</div>
+        <div class="${sc}">${st}</div>
       </div>`;
     grid.appendChild(card);
-  }
-
+  });
   const tile = document.createElement('div');
-  tile.className = 'add-sheet-tile';
-  tile.onclick   = goNewSheet;
-  tile.innerHTML = `<span>＋</span><span>Add a sheet</span>`;
+  tile.className='add-sheet-tile'; tile.onclick=goNewSheet;
+  tile.innerHTML='<span>＋</span><span>Add a sheet</span>';
   grid.appendChild(tile);
 }
 
 // ══════════════════════════════════════════════
 // RENDER — DETAIL
 // ══════════════════════════════════════════════
-async function renderDetail() {
-  const sheet = currentSheet
-    ? (db.sheets[currentColor] || []).find(s => s.id === currentSheet)
-    : null;
-
-  document.getElementById('detail-header-title').textContent =
-    sheet ? (sheet.name || 'Sheet') : 'New Sheet';
+function renderDetail() {
+  const sheet = currentSheet ? (db.sheets[currentColor]||[]).find(s=>s.id===currentSheet) : null;
+  document.getElementById('detail-header-title').textContent = sheet?(sheet.name||'Sheet'):'New Sheet';
   document.getElementById('d-name').value  = sheet?.name  || '';
   document.getElementById('d-w').value     = sheet?.w     || '';
   document.getElementById('d-h').value     = sheet?.h     || '';
   document.getElementById('d-notes').value = sheet?.notes || '';
   document.getElementById('d-stock').textContent = sheet?.qty ?? 1;
-  document.getElementById('btn-delete').style.display = sheet ? 'block' : 'none';
-
-  pendingBlob = null;
-  pendingUrl  = null;
-
+  document.getElementById('btn-delete').style.display = sheet?'block':'none';
+  pendingUrl = null;
   const img   = document.getElementById('detail-img');
   const empty = document.getElementById('detail-empty-icon');
-
-  if (sheet?.hasPhoto) {
-    if (!photoUrlCache[sheet.id]) {
-      const blob = await idbGet(STORE_PHOTOS, sheet.id);
-      if (blob) photoUrlCache[sheet.id] = blobToUrl(blob);
-    }
-    if (photoUrlCache[sheet.id]) {
-      img.src = photoUrlCache[sheet.id];
-      img.style.display = 'block'; empty.style.display = 'none';
-    } else {
-      img.style.display = 'none'; empty.style.display = 'flex';
-    }
+  if (sheet?.photo) {
+    img.src=sheet.photo; img.style.display='block'; empty.style.display='none';
   } else {
-    img.src = ''; img.style.display = 'none'; empty.style.display = 'flex';
+    img.src=''; img.style.display='none'; empty.style.display='flex';
   }
+  setUploading(false);
 }
 
 // ══════════════════════════════════════════════
@@ -718,154 +409,133 @@ async function renderDetail() {
 // ══════════════════════════════════════════════
 function nudgeStock(delta) {
   const el = document.getElementById('d-stock');
-  el.textContent = Math.max(0, parseInt(el.textContent) + delta);
+  el.textContent = Math.max(0, parseInt(el.textContent)+delta);
 }
 
-async function saveSheet() {
-  if (!currentColor) return;
-  if (!db.sheets[currentColor]) db.sheets[currentColor] = [];
+function setUploading(val) {
+  uploading = val;
+  document.getElementById('detail-uploading').style.display = val ? 'flex' : 'none';
+  document.getElementById('photo-btn').style.display = val ? 'none' : 'block';
+  document.getElementById('btn-save').disabled = val;
+}
 
+function saveSheet() {
+  if (!currentColor || uploading) return;
+  if (!db.sheets[currentColor]) db.sheets[currentColor] = [];
   const name  = document.getElementById('d-name').value.trim();
   const w     = document.getElementById('d-w').value.trim();
   const h     = document.getElementById('d-h').value.trim();
   const qty   = parseInt(document.getElementById('d-stock').textContent) || 0;
   const notes = document.getElementById('d-notes').value.trim();
-
   if (currentSheet) {
-    const sheet = db.sheets[currentColor].find(s => s.id === currentSheet);
+    const sheet = db.sheets[currentColor].find(s=>s.id===currentSheet);
     if (sheet) {
-      Object.assign(sheet, { name, w, h, qty, notes });
-      if (pendingBlob) {
-        await idbSet(STORE_PHOTOS, sheet.id, pendingBlob);
-        sheet.hasPhoto = true;
-        delete photoUrlCache[sheet.id]; // clear old URL
-      }
+      Object.assign(sheet, {name,w,h,qty,notes});
+      if (pendingUrl) sheet.photo = pendingUrl;
     }
   } else {
-    const id = 'sh_' + Date.now();
-    const newSheet = { id, name, w, h, qty, notes, hasPhoto: false };
-    if (pendingBlob) {
-      await idbSet(STORE_PHOTOS, id, pendingBlob);
-      newSheet.hasPhoto = true;
-    }
-    db.sheets[currentColor].push(newSheet);
+    db.sheets[currentColor].push({ id:'sh_'+Date.now(), name, w, h, qty, notes, photo: pendingUrl||null });
   }
-
-  await saveMeta();
+  saveMeta();
   toast('✓ Saved');
   showColor(currentColor);
 }
 
-async function deleteSheet() {
-  if (!currentSheet || !currentColor) return;
+function deleteSheet() {
+  if (!currentSheet||!currentColor) return;
   if (!confirm('Delete this sheet?')) return;
-  await idbDelete(STORE_PHOTOS, currentSheet);
-  delete photoUrlCache[currentSheet];
-  db.sheets[currentColor] = (db.sheets[currentColor] || []).filter(s => s.id !== currentSheet);
-  await saveMeta();
+  db.sheets[currentColor] = (db.sheets[currentColor]||[]).filter(s=>s.id!==currentSheet);
+  saveMeta();
   showColor(currentColor);
 }
 
 // ══════════════════════════════════════════════
-// PHOTO UPLOAD
+// PHOTO UPLOAD → ImgBB
 // ══════════════════════════════════════════════
 document.getElementById('fileInput').addEventListener('change', async e => {
   const file = e.target.files[0];
   if (!file) return;
   e.target.value = '';
+  setUploading(true);
   try {
-    pendingBlob = await resizeToBlob(file);
-    if (pendingUrl) URL.revokeObjectURL(pendingUrl);
-    pendingUrl = blobToUrl(pendingBlob);
+    const url = await uploadToImgBB(file);
+    pendingUrl = url;
     const img   = document.getElementById('detail-img');
     const empty = document.getElementById('detail-empty-icon');
-    img.src = pendingUrl; img.style.display = 'block'; empty.style.display = 'none';
+    img.src = url; img.style.display='block'; empty.style.display='none';
+    toast('✓ Photo uploaded');
   } catch(err) {
-    toast('Could not load photo');
+    toast('❌ Upload failed — check connection');
+    console.error(err);
+  } finally {
+    setUploading(false);
   }
 });
 
 // ══════════════════════════════════════════════
 // ADD COLOR MODAL
 // ══════════════════════════════════════════════
-const PRESET_DOTS = [
-  '#c0392b','#e67e22','#f1c40f','#f4d03f','#27ae60','#1abc9c',
-  '#2980b9','#3498db','#8e44ad','#e91e8c','#795548','#607d8b',
-  '#1a1a1a','#bdc3c7','#00bcd4','#ff5722'
-];
+const PRESET_DOTS = ['#c0392b','#e67e22','#f1c40f','#f4d03f','#27ae60','#1abc9c','#2980b9','#3498db','#8e44ad','#e91e8c','#795548','#607d8b','#1a1a1a','#bdc3c7','#00bcd4','#ff5722'];
 
 function openAddColorModal() {
   selectedHex = PRESET_DOTS[0];
   document.getElementById('mc-name').value = '';
   document.getElementById('mc-hex').value  = selectedHex;
-
   const row = document.getElementById('mc-dot-row');
   row.innerHTML = '';
   PRESET_DOTS.forEach(hex => {
     const dot = document.createElement('div');
-    dot.className = 'color-dot' + (hex === selectedHex ? ' selected' : '');
+    dot.className = 'color-dot'+(hex===selectedHex?' selected':'');
     dot.style.background = hex;
     dot.onclick = () => {
-      row.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
-      dot.classList.add('selected');
-      selectedHex = hex;
-      document.getElementById('mc-hex').value = hex;
+      row.querySelectorAll('.color-dot').forEach(d=>d.classList.remove('selected'));
+      dot.classList.add('selected'); selectedHex=hex;
+      document.getElementById('mc-hex').value=hex;
     };
     row.appendChild(dot);
   });
-
   openModal('modal-color');
-  setTimeout(() => document.getElementById('mc-name').focus(), 300);
+  setTimeout(()=>document.getElementById('mc-name').focus(),300);
 }
 
-async function confirmAddColor() {
+function confirmAddColor() {
   const name = document.getElementById('mc-name').value.trim();
   const hex  = document.getElementById('mc-hex').value || selectedHex;
   if (!name) { document.getElementById('mc-name').focus(); return; }
-  db.colors.push({ id: 'c_' + Date.now(), name, hex });
-  await saveMeta();
-  closeModal('modal-color');
-  renderHome();
+  db.colors.push({ id:'c_'+Date.now(), name, hex });
+  saveMeta(); closeModal('modal-color'); renderHome();
   toast(`✓ "${name}" added`);
 }
 
 // ══════════════════════════════════════════════
-// MODAL HELPERS
+// MODAL + TOAST HELPERS
 // ══════════════════════════════════════════════
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-overlay').forEach(el =>
-  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); })
+document.querySelectorAll('.modal-overlay').forEach(el=>
+  el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('open'); })
 );
 
-// ══════════════════════════════════════════════
-// TOAST
-// ══════════════════════════════════════════════
 let toastTimer;
 function toast(msg) {
   const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
+  el.textContent=msg; el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2500);
 }
 
 // ══════════════════════════════════════════════
 // SERVICE WORKER
 // ══════════════════════════════════════════════
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(() => {});
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
 }
 
 // ══════════════════════════════════════════════
 // BOOT
 // ══════════════════════════════════════════════
-(async () => {
-  idb = await openDB();
-  db  = await loadMeta();
-  document.getElementById('loading').style.display = 'none';
-  showHome();
-})();
+document.getElementById('loading').style.display = 'none';
+showHome();
 </script>
 </body>
 </html>
