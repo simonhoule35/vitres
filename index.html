@@ -98,7 +98,6 @@
       transition: transform .15s, border-color .15s;
     }
     .color-chip:active { transform: scale(.95); }
-    .color-chip:hover  { border-color: var(--gold-dim); }
     .chip-swatch { height: 68px; position: relative; }
     .chip-swatch-overlay {
       position: absolute; inset: 0;
@@ -251,8 +250,7 @@
     }
     .modal-title {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 21px; font-weight: 700;
-      margin-bottom: 18px;
+      font-size: 21px; font-weight: 700; margin-bottom: 18px;
     }
     .modal-field { margin-bottom: 14px; }
     .modal-field label {
@@ -264,7 +262,6 @@
       border: 1px solid var(--border); border-radius: 9px;
       padding: 10px 12px; color: var(--text);
       font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none;
-      transition: border-color .15s;
     }
     .modal-field input:focus { border-color: var(--gold-dim); }
     .color-dot-row { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 4px; }
@@ -287,6 +284,20 @@
       font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer;
     }
 
+    /* ── LOADING ── */
+    .loading {
+      position: fixed; inset: 0; background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 999; font-size: 13px; color: var(--muted);
+      flex-direction: column; gap: 12px;
+    }
+    .loading-spinner {
+      width: 28px; height: 28px; border: 2px solid var(--border);
+      border-top-color: var(--gold); border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
     /* ── TOAST ── */
     .toast {
       position: fixed; bottom: calc(var(--safe-bot) + 20px); left: 50%;
@@ -300,14 +311,18 @@
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     #fileInput { display: none; }
+    #resizeCanvas { display: none; }
   </style>
 </head>
 <body>
 
-<!-- ════════════════════════════════
-     SCREEN 1 — HOME (color grid)
-════════════════════════════════ -->
-<div id="screen-home" class="screen active">
+<div class="loading" id="loading">
+  <div class="loading-spinner"></div>
+  <span>Loading inventory…</span>
+</div>
+
+<!-- SCREEN 1 — HOME -->
+<div id="screen-home" class="screen">
   <div class="header">
     <div style="flex:1">
       <div class="header-title">🪟 Glass Inventory</div>
@@ -318,9 +333,7 @@
   <div class="color-grid" id="color-grid"></div>
 </div>
 
-<!-- ════════════════════════════════
-     SCREEN 2 — COLOR (sheet grid)
-════════════════════════════════ -->
+<!-- SCREEN 2 — COLOR -->
 <div id="screen-color" class="screen">
   <div class="header">
     <button class="header-back" id="back-color" onclick="showHome()">‹</button>
@@ -333,9 +346,7 @@
   <div class="sheet-grid" id="sheet-grid"></div>
 </div>
 
-<!-- ════════════════════════════════
-     SCREEN 3 — DETAIL
-════════════════════════════════ -->
+<!-- SCREEN 3 — DETAIL -->
 <div id="screen-detail" class="screen">
   <div class="header">
     <button class="header-back" style="display:flex" onclick="showColor(currentColor)">‹</button>
@@ -343,7 +354,6 @@
       <div class="header-title" id="detail-header-title">Sheet</div>
     </div>
   </div>
-
   <div class="detail-photo" id="detail-photo-wrap">
     <div class="detail-photo-empty" id="detail-empty-icon">🪟</div>
     <img id="detail-img" src="" alt="" style="display:none" />
@@ -351,7 +361,6 @@
       📷 Change photo
     </button>
   </div>
-
   <div class="detail-body">
     <div class="detail-field">
       <label>Sheet name / code</label>
@@ -383,9 +392,7 @@
   </div>
 </div>
 
-<!-- ════════════════════════════════
-     MODAL — ADD COLOR CATEGORY
-════════════════════════════════ -->
+<!-- MODAL — ADD COLOR -->
 <div class="modal-overlay" id="modal-color">
   <div class="modal">
     <div class="modal-title">New color category</div>
@@ -410,34 +417,97 @@
   </div>
 </div>
 
-<!-- hidden canvas for photo resize -->
-<canvas id="resizeCanvas" style="display:none"></canvas>
-<!-- hidden file input -->
+<canvas id="resizeCanvas"></canvas>
 <input type="file" id="fileInput" accept="image/*" capture="environment" />
-
-<!-- toast -->
 <div class="toast" id="toast"></div>
 
 <script>
 // ══════════════════════════════════════════════
-// STORAGE
+// INDEXEDDB — no storage limits, full quality photos
 // ══════════════════════════════════════════════
-const KEY = 'glassinv_v1';
+const DB_NAME    = 'GlassInventory';
+const DB_VERSION = 1;
+const STORE_META = 'meta';    // colors + sheet info (no photos)
+const STORE_PHOTOS = 'photos'; // photos stored as blobs, keyed by sheet id
 
-function load() {
-  try { return JSON.parse(localStorage.getItem(KEY)) || seed(); }
-  catch { return seed(); }
-}
-function persist(d) {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(d));
-  } catch(e) {
-    // localStorage full — warn user
-    toast('⚠️ Storage full! Delete some photos.');
-  }
+let idb; // the IndexedDB instance
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE_META))   db.createObjectStore(STORE_META);
+      if (!db.objectStoreNames.contains(STORE_PHOTOS)) db.createObjectStore(STORE_PHOTOS);
+    };
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror   = e => reject(e.target.error);
+  });
 }
 
-function seed() {
+function idbGet(store, key) {
+  return new Promise((resolve, reject) => {
+    const tx  = idb.transaction(store, 'readonly');
+    const req = tx.objectStore(store).get(key);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror   = () => reject(req.error);
+  });
+}
+
+function idbSet(store, key, value) {
+  return new Promise((resolve, reject) => {
+    const tx  = idb.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).put(value, key);
+    req.onsuccess = () => resolve();
+    req.onerror   = () => reject(req.error);
+  });
+}
+
+function idbDelete(store, key) {
+  return new Promise((resolve, reject) => {
+    const tx  = idb.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).delete(key);
+    req.onsuccess = () => resolve();
+    req.onerror   = () => reject(req.error);
+  });
+}
+
+// ══════════════════════════════════════════════
+// PHOTO RESIZE
+// Photos resized to max 800px — sharp & clear on phone
+// Stored as JPEG blob in IndexedDB (not base64 string)
+// ══════════════════════════════════════════════
+const MAX_PX  = 800;   // ← max pixels on longest side
+const QUALITY = 0.82;  // ← JPEG quality
+
+function resizeToBlob(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload  = ev => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload  = () => {
+        const canvas = document.getElementById('resizeCanvas');
+        let w = img.naturalWidth, h = img.naturalHeight;
+        if (w > h) { if (w > MAX_PX) { h = Math.round(h * MAX_PX / w); w = MAX_PX; } }
+        else        { if (h > MAX_PX) { w = Math.round(w * MAX_PX / h); h = MAX_PX; } }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        canvas.toBlob(blob => blob ? resolve(blob) : reject('toBlob failed'), 'image/jpeg', QUALITY);
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function blobToUrl(blob) { return URL.createObjectURL(blob); }
+
+// ══════════════════════════════════════════════
+// DATA HELPERS
+// ══════════════════════════════════════════════
+function defaultMeta() {
   return {
     colors: [
       { id:'red',    name:'Red',              hex:'#c0392b' },
@@ -457,47 +527,25 @@ function seed() {
   };
 }
 
-let db = load();
+async function loadMeta() {
+  const saved = await idbGet(STORE_META, 'data');
+  return saved || defaultMeta();
+}
 
-// ══════════════════════════════════════════════
-// PHOTO RESIZE
-// ── Resizes any photo to max 200px on longest side
-// ── before storing as base64 JPEG quality 0.75
-// ── ~3–8 KB per photo → 200+ photos fit easily
-// ══════════════════════════════════════════════
-const MAX_PX = 200;   // ← change this if you want bigger thumbnails
-const QUALITY = 0.78; // ← JPEG quality (0–1)
-
-function resizePhoto(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = reject;
-    reader.onload = ev => {
-      const img = new Image();
-      img.onerror = reject;
-      img.onload = () => {
-        const canvas = document.getElementById('resizeCanvas');
-        let w = img.naturalWidth, h = img.naturalHeight;
-        if (w > h) { if (w > MAX_PX) { h = Math.round(h * MAX_PX / w); w = MAX_PX; } }
-        else        { if (h > MAX_PX) { w = Math.round(w * MAX_PX / h); h = MAX_PX; } }
-        canvas.width = w; canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL('image/jpeg', QUALITY));
-      };
-      img.src = ev.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
+async function saveMeta() {
+  await idbSet(STORE_META, 'data', db);
 }
 
 // ══════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════
+let db           = null;
 let currentColor = null;
-let currentSheet = null;  // null = new sheet
-let pendingPhoto = null;  // resized base64 waiting to be saved
+let currentSheet = null;
+let pendingBlob  = null;   // resized Blob waiting to save
+let pendingUrl   = null;   // object URL for preview
 let selectedHex  = '#c0392b';
+let photoUrlCache = {};    // sheetId → object URL (avoids re-fetching)
 
 // ══════════════════════════════════════════════
 // SCREENS
@@ -508,22 +556,22 @@ function showScreen(id) {
   window.scrollTo(0, 0);
 }
 
-function showHome() {
-  renderHome();
+async function showHome() {
+  await renderHome();
   showScreen('screen-home');
 }
 
-function showColor(colorId) {
+async function showColor(colorId) {
   currentColor = colorId;
-  renderColor(colorId);
+  await renderColor(colorId);
   showScreen('screen-color');
   document.getElementById('back-color').style.display = 'flex';
 }
 
-function showDetail(colorId, sheetId) {
+async function showDetail(colorId, sheetId) {
   currentColor = colorId;
   currentSheet = sheetId;
-  renderDetail();
+  await renderDetail();
   showScreen('screen-detail');
 }
 
@@ -532,7 +580,7 @@ function goNewSheet() { showDetail(currentColor, null); }
 // ══════════════════════════════════════════════
 // RENDER — HOME
 // ══════════════════════════════════════════════
-function renderHome() {
+async function renderHome() {
   const total = Object.values(db.sheets).reduce((s, a) => s + a.length, 0);
   document.getElementById('home-sub').textContent =
     `${db.colors.length} colors · ${total} sheet${total !== 1 ? 's' : ''} total`;
@@ -542,9 +590,9 @@ function renderHome() {
 
   db.colors.forEach(c => {
     const sheets = db.sheets[c.id] || [];
-    const chip = document.createElement('div');
+    const chip   = document.createElement('div');
     chip.className = 'color-chip';
-    chip.onclick = () => showColor(c.id);
+    chip.onclick   = () => showColor(c.id);
 
     const isClear = c.id === 'clear';
     const swatchStyle = isClear
@@ -562,18 +610,17 @@ function renderHome() {
     grid.appendChild(chip);
   });
 
-  // Add color tile
   const tile = document.createElement('div');
   tile.className = 'add-color-tile';
-  tile.onclick = openAddColorModal;
+  tile.onclick   = openAddColorModal;
   tile.innerHTML = `<span>＋</span><span>Add color</span>`;
   grid.appendChild(tile);
 }
 
 // ══════════════════════════════════════════════
-// RENDER — COLOR SCREEN
+// RENDER — COLOR
 // ══════════════════════════════════════════════
-function renderColor(colorId) {
+async function renderColor(colorId) {
   const color  = db.colors.find(c => c.id === colorId);
   const sheets = db.sheets[colorId] || [];
 
@@ -586,10 +633,10 @@ function renderColor(colorId) {
   const grid = document.getElementById('sheet-grid');
   grid.innerHTML = '';
 
-  sheets.forEach(sheet => {
+  for (const sheet of sheets) {
     const card = document.createElement('div');
     card.className = 'sheet-card';
-    card.onclick = () => showDetail(colorId, sheet.id);
+    card.onclick   = () => showDetail(colorId, sheet.id);
 
     const stockClass = sheet.qty === 0 ? 'sheet-stock-out'
                      : sheet.qty === 1 ? 'sheet-stock-warn'
@@ -598,23 +645,31 @@ function renderColor(colorId) {
                      : sheet.qty === 1 ? '⚠ 1 left'
                      : `✓ ${sheet.qty} in stock`;
 
+    // Load photo from IndexedDB if needed
+    let photoHtml = `<div class="sheet-photo-empty">🪟</div>`;
+    if (sheet.hasPhoto) {
+      if (!photoUrlCache[sheet.id]) {
+        const blob = await idbGet(STORE_PHOTOS, sheet.id);
+        if (blob) photoUrlCache[sheet.id] = blobToUrl(blob);
+      }
+      if (photoUrlCache[sheet.id]) {
+        photoHtml = `<img src="${photoUrlCache[sheet.id]}" alt="" loading="lazy" />`;
+      }
+    }
+
     card.innerHTML = `
-      <div class="sheet-photo">
-        ${sheet.photo
-          ? `<img src="${sheet.photo}" alt="${sheet.name||''}" loading="lazy" />`
-          : `<div class="sheet-photo-empty">🪟</div>`}
-      </div>
+      <div class="sheet-photo">${photoHtml}</div>
       <div class="sheet-info">
         <div class="sheet-name">${sheet.name || 'Unnamed'}</div>
         <div class="sheet-size">${sheet.w && sheet.h ? sheet.w+'×'+sheet.h+' cm' : '—'}</div>
         <div class="${stockClass}">${stockText}</div>
       </div>`;
     grid.appendChild(card);
-  });
+  }
 
   const tile = document.createElement('div');
   tile.className = 'add-sheet-tile';
-  tile.onclick = goNewSheet;
+  tile.onclick   = goNewSheet;
   tile.innerHTML = `<span>＋</span><span>Add a sheet</span>`;
   grid.appendChild(tile);
 }
@@ -622,7 +677,7 @@ function renderColor(colorId) {
 // ══════════════════════════════════════════════
 // RENDER — DETAIL
 // ══════════════════════════════════════════════
-function renderDetail() {
+async function renderDetail() {
   const sheet = currentSheet
     ? (db.sheets[currentColor] || []).find(s => s.id === currentSheet)
     : null;
@@ -636,13 +691,25 @@ function renderDetail() {
   document.getElementById('d-stock').textContent = sheet?.qty ?? 1;
   document.getElementById('btn-delete').style.display = sheet ? 'block' : 'none';
 
-  pendingPhoto = null;
+  pendingBlob = null;
+  pendingUrl  = null;
+
   const img   = document.getElementById('detail-img');
   const empty = document.getElementById('detail-empty-icon');
-  if (sheet?.photo) {
-    img.src = sheet.photo; img.style.display = 'block'; empty.style.display = 'none';
+
+  if (sheet?.hasPhoto) {
+    if (!photoUrlCache[sheet.id]) {
+      const blob = await idbGet(STORE_PHOTOS, sheet.id);
+      if (blob) photoUrlCache[sheet.id] = blobToUrl(blob);
+    }
+    if (photoUrlCache[sheet.id]) {
+      img.src = photoUrlCache[sheet.id];
+      img.style.display = 'block'; empty.style.display = 'none';
+    } else {
+      img.style.display = 'none'; empty.style.display = 'flex';
+    }
   } else {
-    img.src = '';           img.style.display = 'none';  empty.style.display = 'flex';
+    img.src = ''; img.style.display = 'none'; empty.style.display = 'flex';
   }
 }
 
@@ -654,7 +721,7 @@ function nudgeStock(delta) {
   el.textContent = Math.max(0, parseInt(el.textContent) + delta);
 }
 
-function saveSheet() {
+async function saveSheet() {
   if (!currentColor) return;
   if (!db.sheets[currentColor]) db.sheets[currentColor] = [];
 
@@ -668,26 +735,34 @@ function saveSheet() {
     const sheet = db.sheets[currentColor].find(s => s.id === currentSheet);
     if (sheet) {
       Object.assign(sheet, { name, w, h, qty, notes });
-      if (pendingPhoto !== null) sheet.photo = pendingPhoto;
+      if (pendingBlob) {
+        await idbSet(STORE_PHOTOS, sheet.id, pendingBlob);
+        sheet.hasPhoto = true;
+        delete photoUrlCache[sheet.id]; // clear old URL
+      }
     }
   } else {
-    db.sheets[currentColor].push({
-      id: 'sh_' + Date.now(),
-      name, w, h, qty, notes,
-      photo: pendingPhoto || null
-    });
+    const id = 'sh_' + Date.now();
+    const newSheet = { id, name, w, h, qty, notes, hasPhoto: false };
+    if (pendingBlob) {
+      await idbSet(STORE_PHOTOS, id, pendingBlob);
+      newSheet.hasPhoto = true;
+    }
+    db.sheets[currentColor].push(newSheet);
   }
 
-  persist(db);
+  await saveMeta();
   toast('✓ Saved');
   showColor(currentColor);
 }
 
-function deleteSheet() {
+async function deleteSheet() {
   if (!currentSheet || !currentColor) return;
   if (!confirm('Delete this sheet?')) return;
+  await idbDelete(STORE_PHOTOS, currentSheet);
+  delete photoUrlCache[currentSheet];
   db.sheets[currentColor] = (db.sheets[currentColor] || []).filter(s => s.id !== currentSheet);
-  persist(db);
+  await saveMeta();
   showColor(currentColor);
 }
 
@@ -699,12 +774,13 @@ document.getElementById('fileInput').addEventListener('change', async e => {
   if (!file) return;
   e.target.value = '';
   try {
-    const resized = await resizePhoto(file);
-    pendingPhoto = resized;
+    pendingBlob = await resizeToBlob(file);
+    if (pendingUrl) URL.revokeObjectURL(pendingUrl);
+    pendingUrl = blobToUrl(pendingBlob);
     const img   = document.getElementById('detail-img');
     const empty = document.getElementById('detail-empty-icon');
-    img.src = resized; img.style.display = 'block'; empty.style.display = 'none';
-  } catch {
+    img.src = pendingUrl; img.style.display = 'block'; empty.style.display = 'none';
+  } catch(err) {
     toast('Could not load photo');
   }
 });
@@ -715,7 +791,7 @@ document.getElementById('fileInput').addEventListener('change', async e => {
 const PRESET_DOTS = [
   '#c0392b','#e67e22','#f1c40f','#f4d03f','#27ae60','#1abc9c',
   '#2980b9','#3498db','#8e44ad','#e91e8c','#795548','#607d8b',
-  '#1a1a1a','#ecf0f1','#00bcd4','#ff5722'
+  '#1a1a1a','#bdc3c7','#00bcd4','#ff5722'
 ];
 
 function openAddColorModal() {
@@ -742,12 +818,12 @@ function openAddColorModal() {
   setTimeout(() => document.getElementById('mc-name').focus(), 300);
 }
 
-function confirmAddColor() {
+async function confirmAddColor() {
   const name = document.getElementById('mc-name').value.trim();
   const hex  = document.getElementById('mc-hex').value || selectedHex;
   if (!name) { document.getElementById('mc-name').focus(); return; }
   db.colors.push({ id: 'c_' + Date.now(), name, hex });
-  persist(db);
+  await saveMeta();
   closeModal('modal-color');
   renderHome();
   toast(`✓ "${name}" added`);
@@ -758,7 +834,6 @@ function confirmAddColor() {
 // ══════════════════════════════════════════════
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
 document.querySelectorAll('.modal-overlay').forEach(el =>
   el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); })
 );
@@ -776,7 +851,7 @@ function toast(msg) {
 }
 
 // ══════════════════════════════════════════════
-// SERVICE WORKER (PWA offline support)
+// SERVICE WORKER
 // ══════════════════════════════════════════════
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').catch(() => {});
@@ -785,7 +860,12 @@ if ('serviceWorker' in navigator) {
 // ══════════════════════════════════════════════
 // BOOT
 // ══════════════════════════════════════════════
-showHome();
+(async () => {
+  idb = await openDB();
+  db  = await loadMeta();
+  document.getElementById('loading').style.display = 'none';
+  showHome();
+})();
 </script>
 </body>
 </html>
